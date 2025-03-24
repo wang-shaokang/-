@@ -2,9 +2,52 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>第一个网站</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我命由我不由天</title>
+    <style>
+        body{
+            background-image: url("中国风水墨山水.gif");
+            background-size: cover; /*确认背景图覆盖整个body*/
+            background-position: center; /*将背景图片居中*/
+            background-repeat: no-repeat; /*防止背景图片重复*/
+            display: flex; /*将body设置为flex容器（弹性布局）*/
+            justify-content: center; /*将容器的子元素水平居中*/
+            align-items: center; /*将容器的子元素垂直居中*/
+            height: 100vh; /*将body的高度设置为100%，以适应整个屏幕*/
+            margin: 0; /*移除body的默认外边距*/
+        }
+        .container{
+            width: 250px;
+            }
+        button{
+            width: 100%;
+            height: 60px;
+            margin: 10px 0; /*设置外边距*/
+            background-color: rgba(11, 241, 23, 0.479);
+            border: none; /*移除按钮的边框*/
+            border-radius: 10px; /*设置按钮的圆角*/
+            cursor: pointer; /*设置鼠标指针为手形*/
+            font-size: 18px; /* 设置字体大小 */
+            font-weight: bold; /* 设置字体粗细 */
+            color: rgb(45, 11, 179); /* 设置字体颜色 */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 添加阴影效果 ，rgba带透明度的颜色效果*/
+            transition: background-color 0.3s ease, transform 0.3s ease; /* 添加过渡效果 */
+        }
+        /* 伪类选择器，修改鼠标悬停时的样式 */
+        button:hover {
+            background-color: rgba(11, 241, 23, 0.7); /* 悬停时改变背景颜色 */
+            transform: scale(1.05); /* 悬停时稍微放大按钮 */
+        }
+    </style>
 </head>
 <body>
-    <p>我的第一个网站</p>
+    <div class="container">
+        <button>登录</button>
+        <br>
+        <button>创建角色</button>
+        <br>
+        <button>查询角色</button>
+    </div>
+    
 </body>
 </html>
