@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生日快乐</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-image: url('./xingkong.jpg');
+            background-size: cover; /* 使背景图片覆盖整个屏幕 */
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="fireworksCanvas"></canvas>
+    <script>
+        const canvas = document.getElementById('fireworksCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const message = "生日快乐";
+        const textParticles = [];
+        const fixedSpeed = 2; // 固定速度
+
+        class TextParticle {
+            constructor(x, y, text) {
+                this.x = x;
+                this.y = y;
+                this.text = text;
+                this.vx = (Math.random() - 0.5) * fixedSpeed;
+                this.vy = (Math.random() - 0.5) * fixedSpeed;
+                this.size = 80; // 醒目的字体大小
+                this.color = `hsl(${Math.random() * 360}, 100%, 50%)`; // 随机颜色
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                // 边界碰撞检测
+                if (this.x + this.size > canvas.width) {
+                    this.x = canvas.width - this.size;
+                    this.vx = -this.vx;
+                } else if (this.x - this.size < 0) {
+                    this.x = this.size;
+                    this.vx = -this.vx;
+                }
+
+                if (this.y + this.size > canvas.height) {
+                    this.y = canvas.height - this.size;
+                    this.vy = -this.vy;
+                } else if (this.y - this.size < 0) {
+                    this.y = this.size;
+                    this.vy = -this.vy;
+                }
+                // 检查与其他粒子的碰撞
+                for (let i = 0; i < textParticles.length; i++) {
+                    if (this !== textParticles[i]) {
+                        const dx = this.x - textParticles[i].x;
+                        const dy = this.y - textParticles[i].y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        if (distance < this.size) { // 如果距离小于字体大小
+                            const angle = Math.atan2(dy, dx);
+                            const targetX = this.x - Math.cos(angle) * this.size;
+                            const targetY = this.y - Math.sin(angle) * this.size;
+                            const ax = (targetX - textParticles[i].x) * 0.05;
+                            const ay = (targetY - textParticles[i].y) * 0.05;
+                            this.vx -= ax;
+                            this.vy -= ay;
+                            textParticles[i].vx += ax;
+                            textParticles[i].vy += ay;
+
+                            // 确保粒子不会继续重叠
+                            const overlap = this.size - distance;
+                            const smallOverlap = overlap / 2;
+                            this.x += Math.cos(angle) * smallOverlap;
+                            this.y += Math.sin(angle) * smallOverlap;
+                            textParticles[i].x -= Math.cos(angle) * smallOverlap;
+                            textParticles[i].y -= Math.sin(angle) * smallOverlap;
+
+                             // 使两个粒子向相反方向移动
+                             this.vx = -this.vx;
+                            this.vy = -this.vy;
+                            textParticles[i].vx = -textParticles[i].vx;
+                            textParticles[i].vy = -textParticles[i].vy;
+                        }
+                    }
+                }
+
+                // 重新计算速度的大小并归一化为固定值
+                const speed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
+                this.vx = (this.vx / speed) * fixedSpeed;
+                this.vy = (this.vy / speed) * fixedSpeed;
+            }
+
+            draw() {
+                ctx.font = `${this.size}px Arial`;
+                ctx.fillStyle = this.color;
+                ctx.fillText(this.text, this.x, this.y);
+            }
+        }
+
+        function createTextParticles() {
+            const startX = canvas.width / 2 - (message.length / 2) * 50;
+            const startY = canvas.height / 2;
+            for (let i = 0; i < message.length; i++) {
+                let x = startX + i * 50;
+                let y = startY;
+                let overlapping = false;
+                do {
+                    overlapping = false;
+                    x = Math.random() * (canvas.width - 160) + 80; // 确保粒子距离屏幕边缘不低于80像素
+                    y = Math.random() * (canvas.height - 160) + 80; // 确保粒子距离屏幕边缘不低于80像素
+                    for (let j = 0; j < textParticles.length; j++) {
+                        const dx = x - textParticles[j].x;
+                        const dy = y - textParticles[j].y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        if (distance < 80) {
+                            overlapping = true;
+                            x = Math.random() * canvas.width;
+                            y = Math.random() * canvas.height;
+                            break;
+                        }
+                    }
+                } while (overlapping);
+                textParticles.push(new TextParticle(x, y, message[i]));
+            }
+        }
+
+        class Firework {
+            constructor(x, y, targetX, targetY) {
+                this.x = x;
+                this.y = y;
+                this.targetX = targetX;
+                this.targetY = targetY;
+                this.distanceToTarget = Math.sqrt((targetX - x) ** 2 + (targetY - y) ** 2);
+                this.distanceTraveled = 0;
+                this.coordinates = [];
+                this.coordinateCount = 3;
+                while (this.coordinateCount--) {
+                    this.coordinates.push([this.x, this.y]);
+                }
+                this.angle = Math.atan2(targetY - y, targetX - x);
+                this.speed = 2;
+                this.acceleration = 1.05;
+                this.brightness = Math.random() * 50 + 50;
+                this.targetRadius = 1;
+            }
+
+            update(index) {
+                this.coordinates.pop();
+                this.coordinates.unshift([this.x, this.y]);
+                if (this.targetRadius < 8) {
+                    this.targetRadius += 0.3;
+                } else {
+                    this.targetRadius = 1;
+                }
+                this.speed *= this.acceleration;
+                const vx = Math.cos(this.angle) * this.speed;
+                const vy = Math.sin(this.angle) * this.speed;
+                this.distanceTraveled = Math.sqrt((this.x + vx - this.x) ** 2 + (this.y + vy - this.y) ** 2);
+                if (this.distanceTraveled >= this.distanceToTarget) {
+                    createFireworkParticles(this.targetX, this.targetY);
+                    fireworks.splice(index, 1);
+                } else {
+                    this.x += vx;
+                    this.y += vy;
+                }
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.moveTo(this.coordinates[this.coordinates.length - 1][0], this.coordinates[this.coordinates.length - 1][1]);
+                ctx.lineTo(this.x, this.y);
+                ctx.strokeStyle = `hsl(${Math.random() * 360}, 100%, ${this.brightness}%)`;
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.arc(this.targetX, this.targetY, this.targetRadius, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+        }
+
+        class FireworkParticle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.coordinates = [];
+                this.coordinateCount = 5;
+                while (this.coordinateCount--) {
+                    this.coordinates.push([this.x, this.y]);
+                }
+                this.angle = Math.random() * Math.PI * 2;
+                this.speed = Math.random() * 10 + 1;
+                this.friction = 0.95;
+                this.gravity = 1;
+                this.hue = Math.random() * 360;
+                this.brightness = Math.random() * 50 + 50;
+                this.alpha = 1;
+                this.decay = Math.random() * 0.03 + 0.01;
+            }
+
+            update(index) {
+                this.coordinates.pop();
+                this.coordinates.unshift([this.x, this.y]);
+                this.speed *= this.friction;
+                this.x += Math.cos(this.angle) * this.speed;
+                this.y += Math.sin(this.angle) * this.speed + this.gravity;
+                this.alpha -= this.decay;
+                if (this.alpha <= this.decay) {
+                    fireworkParticles.splice(index, 1);
+                }
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.moveTo(this.coordinates[this.coordinates.length - 1][0], this.coordinates[this.coordinates.length - 1][1]);
+                ctx.lineTo(this.x, this.y);
+                ctx.strokeStyle = `hsla(${this.hue}, 100%, ${this.brightness}%, ${this.alpha})`;
+                ctx.stroke();
+            }
+        }
+
+        const fireworks = [];
+        const fireworkParticles = [];
+
+        function createFireworkParticles(x, y) {
+            let particleCount = 30;
+            while (particleCount--) {
+                fireworkParticles.push(new FireworkParticle(x, y));
+            }
+        }
+
+        function loop() {
+            requestAnimationFrame(loop);
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.globalCompositeOperation = 'lighter';
+            let i = fireworks.length;
+            while (i--) {
+                fireworks[i].draw();
+                fireworks[i].update(i);
+            }
+            let j = fireworkParticles.length;
+            while (j--) {
+                fireworkParticles[j].draw();
+                fireworkParticles[j].update(j);
+            }
+            textParticles.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
+            if (Math.random() < 0.05) {
+                fireworks.push(new Firework(canvas.width / 2, canvas.height, Math.random() * canvas.width, Math.random() * canvas.height / 2));
+            }
+        }
+
+        createTextParticles();
+        loop();
+    </script>
+</body>
+</html>
