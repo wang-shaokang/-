@@ -78,8 +78,8 @@
                             const angle = Math.atan2(dy, dx);
                             const targetX = this.x - Math.cos(angle) * this.size;
                             const targetY = this.y - Math.sin(angle) * this.size;
-                            const ax = (targetX - textParticles[i].x) * 0.05;
-                            const ay = (targetY - textParticles[i].y) * 0.05;
+                            const ax = (targetX - textParticles[i].x) * 0.01;
+                            const ay = (targetY - textParticles[i].y) * 0.01;
                             this.vx -= ax;
                             this.vy -= ay;
                             textParticles[i].vx += ax;
