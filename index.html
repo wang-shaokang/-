@@ -44,7 +44,7 @@
                 this.text = text;
                 this.vx = (Math.random() - 0.5) * fixedSpeed;
                 this.vy = (Math.random() - 0.5) * fixedSpeed;
-                this.size = 50; // 醒目的字体大小
+                this.size = 80; // 醒目的字体大小
                 this.color = `hsl(${Math.random() * 360}, 100%, 50%)`; // 随机颜色
             }
 
@@ -64,7 +64,7 @@
                 if (this.y > canvas.height) {
                     //this.y = canvas.height - this.size;
                     this.vy = -this.vy;
-                } else if (this.y - this.size < 5) {
+                } else if (this.y - this.size < 0) {
                     //this.y = this.size;
                     this.vy = -this.vy;
                 }
