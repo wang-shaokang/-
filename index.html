@@ -24,6 +24,7 @@
             top: 0;
             left: 0;
         }
+      
     </style>
 </head>
 <body>
@@ -34,10 +35,12 @@
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
-        const message = "王乐涵王楚心";
+        const message = "金木水火土王乐涵王楚心刘红燕王少康爸爸妈妈姐姐妹妹abcdefg1234567890大小多少你我他吃";
         const textParticles = [];
         const fixedSpeed = 3; // 固定速度
+      
 
+        // TextParticle 类
         class TextParticle {
             constructor(x, y, text) {
                 this.x = x;
@@ -46,7 +49,7 @@
                 this.vx = (Math.random() - 0.5) * fixedSpeed;
                 this.vy = (Math.random() - 0.5) * fixedSpeed;
                 this.size = 80; // 醒目的字体大小
-                this.color = `hsl(${Math.random() * 360}, 100%, 50%)`; // 随机颜色
+                this.color = Math.random() * 360; // 随机生成色相值
             }
 
             update() {
@@ -111,15 +114,18 @@
 
             draw() {
                 ctx.font = `${this.size}px Arial`;
-                ctx.fillStyle = this.color;
+                ctx.fillStyle = `hsl(${this.color}, 100%, 50%)`; // 使用 hsl 格式
                 ctx.fillText(this.text, this.x, this.y);
             }
         }
 
         function createTextParticles() {
-            const startX = canvas.width / 2 - (message.length / 2) * 50;
+            textParticles.length = 0; // 清空现有粒子
+            const randomMessage = message[Math.floor(Math.random() * message.length)] + 
+                          message[Math.floor(Math.random() * message.length)]; // 随机生成两个字符
+            const startX = canvas.width / 2 - (randomMessage.length / 2) * 50;
             const startY = canvas.height / 2;
-            for (let i = 0; i < message.length; i++) {
+            for (let i = 0; i < randomMessage.length; i++) {
                 let x = startX + i * 50;
                 let y = startY;
                 let overlapping = false;
@@ -139,11 +145,12 @@
                         }
                     }
                 } while (overlapping);
-                textParticles.push(new TextParticle(x, y, message[i]));
+                textParticles.push(new TextParticle(x, y, randomMessage[i]));
             }
         }
 
         class Firework {
+            // 烟花信号弹
             constructor(x, y, targetX, targetY) {
                 this.x = x;
                 this.y = y;
@@ -161,6 +168,7 @@
                 this.acceleration = 1.05;
                 this.brightness = Math.random() * 50 + 50;
                 this.targetRadius = 1;
+                this.color = Math.random() * 360;
             }
 
             update(index) {
@@ -176,7 +184,7 @@
                 const vy = Math.sin(this.angle) * this.speed;
                 this.distanceTraveled = Math.sqrt((this.x + vx - this.x) ** 2 + (this.y + vy - this.y) ** 2);
                 if (this.distanceTraveled >= this.distanceToTarget) {
-                    createFireworkParticles(this.targetX, this.targetY);
+                    createFireworkParticles(this.targetX, this.targetY, this.color);
                     fireworks.splice(index, 1);
                 } else {
                     this.x += vx;
@@ -196,8 +204,10 @@
             }
         }
 
+        // FireworkParticle 类
         class FireworkParticle {
-            constructor(x, y) {
+            //烟花
+            constructor(x, y, color) {
                 this.x = x;
                 this.y = y;
                 this.coordinates = [];
@@ -209,10 +219,9 @@
                 this.speed = Math.random() * 10 + 1;
                 this.friction = 0.95;
                 this.gravity = 1;
-                this.hue = Math.random() * 360;
-                this.brightness = Math.random() * 50 + 50;
-                this.alpha = 1;
-                this.decay = Math.random() * 0.03 + 0.01;
+                this.alpha = 1; // 初始透明度
+                this.decay = Math.random() * 0.02 + 0.01; // 透明度衰减速度
+                this.color = color; // 使用传入的色相值
             }
 
             update(index) {
@@ -229,21 +238,60 @@
 
             draw() {
                 ctx.beginPath();
-                ctx.moveTo(this.coordinates[this.coordinates.length - 1][0], this.coordinates[this.coordinates.length - 1][1]);
-                ctx.lineTo(this.x, this.y);
-                ctx.strokeStyle = `hsla(${this.hue}, 100%, ${this.brightness}%, ${this.alpha})`;
-                ctx.stroke();
+                ctx.arc(this.x, this.y, 3, 0, Math.PI * 2); // 绘制小圆点
+                ctx.fillStyle = `hsla(${this.color}, 100%, 50%, ${this.alpha})`; // 使用 hsla 格式，支持透明度
+                ctx.fill();
             }
         }
 
         const fireworks = [];
         const fireworkParticles = [];
 
-        function createFireworkParticles(x, y) {
+        function createFireworkParticles(x, y, color) {
             let particleCount = 30;
             while (particleCount--) {
-                fireworkParticles.push(new FireworkParticle(x, y));
+                fireworkParticles.push(new FireworkParticle(x, y, color));
             }
+        }
+
+        // 动态生成按钮并绑定事件
+        function createRetryButton() {
+            // 检查是否已经存在按钮，避免重复创建
+            if (document.getElementById('retryButton')) return;
+
+            // 创建按钮
+            const retryButton = document.createElement('button');
+            retryButton.id = 'retryButton';
+            retryButton.textContent = '再试一次';
+
+            // 设置按钮样式
+            retryButton.style.position = 'absolute';
+            retryButton.style.bottom = '20px';
+            retryButton.style.left = '50%';
+            retryButton.style.transform = 'translateX(-50%)';
+            retryButton.style.padding = '10px 20px';
+            retryButton.style.fontSize = '16px';
+            retryButton.style.color = '#fff';
+            retryButton.style.backgroundColor = '#007bff';
+            retryButton.style.border = 'none';
+            retryButton.style.borderRadius = '5px';
+            retryButton.style.cursor = 'pointer';
+
+            // 添加悬停效果
+            retryButton.addEventListener('mouseover', () => {
+                retryButton.style.backgroundColor = '#0056b3';
+            });
+            retryButton.addEventListener('mouseout', () => {
+                retryButton.style.backgroundColor = '#007bff';
+            });
+
+            // 绑定点击事件
+            retryButton.addEventListener('click', () => {
+                createTextParticles(); // 调用重新创建粒子的函数
+            });
+
+            // 将按钮添加到页面
+            document.body.appendChild(retryButton);
         }
 
         function loop() {
@@ -262,17 +310,68 @@
                 fireworkParticles[j].draw();
                 fireworkParticles[j].update(j);
             }
+            // 检测 textParticles 是否为空
+            if (textParticles.length === 0) {
+                /*if (Math.random() < 0.05) {
+                    fireworks.push(new Firework(canvas.width / 2, canvas.height, Math.random() * canvas.width, Math.random() * canvas.height / 2));
+                    createRetryButton(); // 创建按钮
+                }*/
+                createTextParticles(); // 如果为空，重新创建粒子
+            }
+            
             textParticles.forEach(particle => {
                 particle.update();
                 particle.draw();
             });
-            if (Math.random() < 0.05) {
+            /*if (Math.random() < 0.05) {
                 fireworks.push(new Firework(canvas.width / 2, canvas.height, Math.random() * canvas.width, Math.random() * canvas.height / 2));
-            }
+            }*/
         }
 
         createTextParticles();
         loop();
+
+
+        // 添加事件监听器，支持鼠标点击和触摸事件
+        canvas.addEventListener('click', handleInteraction);
+        canvas.addEventListener('touchstart', handleInteraction);
+
+        // 处理交互事件
+        function handleInteraction(event) {
+            let mouseX, mouseY;
+            if (event.type === 'touchstart') {
+                const touch = event.touches[0];
+                mouseX = touch.clientX;
+                mouseY = touch.clientY;
+            } else {
+                mouseX = event.clientX;
+                mouseY = event.clientY;
+            }
+
+            textParticles.forEach((particle, index) => {
+                if (isParticleClicked(particle, mouseX, mouseY)) {
+                    createExplosion(particle.x, particle.y, particle.color); // 创建爆炸效果
+                    textParticles.splice(index, 1); // 移除被点击的粒子
+                }
+            });
+        }
+
+        // 检测矩形粒子是否被点击的函数
+        function isParticleClicked(particle, mouseX, mouseY) {
+            // 检查鼠标是否在矩形的范围内
+            return (
+                mouseX >= particle.x && // 鼠标 X 坐标大于等于矩形左边界
+                mouseX <= particle.x + particle.size && // 鼠标 X 坐标小于等于矩形右边界
+                mouseY >= particle.y - particle.size && // 鼠标 Y 坐标大于等于矩形顶部边界
+                mouseY <= particle.y // 鼠标 Y 坐标小于等于矩形底部边界
+            );
+        }
+        // 创建爆炸粒子的函数
+        function createExplosion(x, y, color) {
+            for (let i = 0; i < 50; i++) {
+                fireworkParticles.push(new FireworkParticle(x, y, color));
+            }
+        }
     </script>
 </body>
 </html>
