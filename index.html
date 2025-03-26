@@ -9,8 +9,9 @@
             margin: 0;
             padding: 0;
             overflow: hidden;
-            background-image: url('./xingkong.jpg');
-            background-size: cover; /* 使背景图片覆盖整个屏幕 */
+            background-color:rgb(2, 27, 27);
+            /*background-image: url('./xingkong.jpg');
+            background-size: cover;  使背景图片覆盖整个屏幕 */
             color: #fff;
             display: flex;
             justify-content: center;
@@ -33,9 +34,9 @@
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
-        const message = "生日快乐";
+        const message = "王乐涵王楚心";
         const textParticles = [];
-        const fixedSpeed = 1; // 固定速度
+        const fixedSpeed = 3; // 固定速度
 
         class TextParticle {
             constructor(x, y, text) {
@@ -54,18 +55,18 @@
 
                 // 边界碰撞检测
                 if (this.x + this.size > canvas.width) {
-                    //this.x = canvas.width - this.size;
+                    this.x = canvas.width - this.size;
                     this.vx = -this.vx;
-                } else if (this.x < 0) {
-                    //this.x = this.size;
+                } else if (this.x  < 0) {
+                    this.x = 0;
                     this.vx = -this.vx;
                 }
 
                 if (this.y > canvas.height) {
-                    //this.y = canvas.height - this.size;
+                    this.y = canvas.height;
                     this.vy = -this.vy;
                 } else if (this.y - this.size < 0) {
-                    //this.y = this.size;
+                    this.y = this.size;
                     this.vy = -this.vy;
                 }
                 // 检查与其他粒子的碰撞
@@ -78,8 +79,8 @@
                             const angle = Math.atan2(dy, dx);
                             const targetX = this.x - Math.cos(angle) * this.size;
                             const targetY = this.y - Math.sin(angle) * this.size;
-                            const ax = (targetX - textParticles[i].x) * 0.01;
-                            const ay = (targetY - textParticles[i].y) * 0.01;
+                            const ax = (targetX - textParticles[i].x) * 0.05;
+                            const ay = (targetY - textParticles[i].y) * 0.05;
                             this.vx -= ax;
                             this.vy -= ay;
                             textParticles[i].vx += ax;
