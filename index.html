@@ -56,7 +56,7 @@
                 if (this.x + this.size > canvas.width) {
                     this.x = canvas.width - this.size;
                     this.vx = -this.vx;
-                } else if (this.x - this.size < 0) {
+                } else if (this.x < 0) {
                     this.x = this.size;
                     this.vx = -this.vx;
                 }
@@ -64,7 +64,7 @@
                 if (this.y + this.size > canvas.height) {
                     this.y = canvas.height - this.size;
                     this.vy = -this.vy;
-                } else if (this.y - this.size < 0) {
+                } else if (this.y < 0) {
                     this.y = this.size;
                     this.vy = -this.vy;
                 }
