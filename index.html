@@ -28,6 +28,7 @@
     </style>
 </head>
 <body>
+    <audio id="poLieYinXiao" src="poLieYinXiao.wav"></audio>
     <canvas id="fireworksCanvas"></canvas>
     <script>
         const canvas = document.getElementById('fireworksCanvas');
@@ -328,6 +329,16 @@
             }*/
         }
 
+        function playSound(){
+            //播放声音
+            const audio = document.getElementById('poLieYinXiao');
+            audio.currentTime = 0; //重置播放进度(允许重复触发)
+            audio.play().catch(error =>{
+                console.log('播放声音失败;', error);
+            });
+
+        }
+
         createTextParticles();
         loop();
 
@@ -350,6 +361,7 @@
 
             textParticles.forEach((particle, index) => {
                 if (isParticleClicked(particle, mouseX, mouseY)) {
+                    playSound(); // 播放声音
                     createExplosion(particle.x, particle.y, particle.color); // 创建爆炸效果
                     textParticles.splice(index, 1); // 移除被点击的粒子
                 }
