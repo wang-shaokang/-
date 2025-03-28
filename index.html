@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>点点点</title>
+    <title>生日快乐</title>
     <style>
         body {
             margin: 0;
@@ -20,26 +20,72 @@
             font-family: Arial, sans-serif;
         }
         canvas {
+            display: none; /* 隐藏画布 */
             position: absolute;
             top: 0;
             left: 0;
         }
+        button {
+            position: absolute; /* 设置按钮位置 ,绝对位置*/
+            top: 50%; /* 垂直居中 */
+            left: 50%;/* 水平居中*/
+            transform: translate(-50%, -50%);/*按钮居中 */
+            padding: 20px 40px;
+            font-size: 50px; /* 设置按钮字体大小 */
+            color: #fff; /* 设置按钮字体颜色 */
+            background-color: #007bff; /* 设置按钮背景颜色 */
+            border: none; /* 去掉按钮边框 */
+            border-radius: 10px; /* 设置按钮圆角 */
+            cursor: pointer; /* 鼠标悬停时显示手型光标 */
+            transition: background-color 0.3s; /* 添加过渡效果 */
+        }
+        button:hover {
+        background-color: #0056b3; /* 鼠标悬停时的背景颜色 */
+        }
+
+        /* 手机端适配 */
+        @media (max-width: 768px) {
+            button {
+                padding: 10px 20px; /* 减小按钮内边距 */
+                font-size: 50px; /* 减小字体大小 */
+            }
+        }
+
+        @media (max-width: 480px) {
+            button {
+                padding: 8px 16px; /* 更小的按钮内边距 */
+                font-size: 30px; /* 更小的字体大小 */
+            }
+        }
       
     </style>
-    <link rel="preload" href="poLieYinXiao.wav' as='audio">
+    <!-- <link rel="preload" href="poLieYinXiao.wav"> -->
 </head>
 <body>
-    <audio id="poLieYinXiao" src="poLieYinXiao.wav"></audio>
+    <audio id="poLieYinXiao" src="poLieYinXiao.wav" preload="auto"></audio>
     <canvas id="fireworksCanvas"></canvas>
+    <button id="startButton">开始游戏</button>
     <script>
         const canvas = document.getElementById('fireworksCanvas');
-        const ctx = canvas.getContext('2d');
+        const ctx = canvas.getContext('2d');/*2D模式*/
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
         const message = "金木水火土王乐涵王楚心刘红燕王少康爸爸妈妈姐姐妹妹abcdefg1234567890大小多少你我他吃";
         const textParticles = [];
-        const fixedSpeed = 2; // 固定速度
+        const fixedSpeed = 3; // 固定速度
+        let score = 0;//初始化积分
+
+        // 显示积分
+        const scoreDisplay = document.createElement('div');
+        scoreDisplay.style.position = 'absolute';
+        scoreDisplay.style.top = '10px';
+        scoreDisplay.style.left = '10px';
+        scoreDisplay.style.color = '#fff';
+        scoreDisplay.style.fontSize = '24px';
+        scoreDisplay.style.fontFamily = 'Arial, sans-serif';
+        scoreDisplay.textContent = `积分: ${score}`;
+        document.body.appendChild(scoreDisplay);
       
 
         // TextParticle 类
@@ -256,45 +302,7 @@
             }
         }
 
-        // 动态生成按钮并绑定事件
-        function createRetryButton() {
-            // 检查是否已经存在按钮，避免重复创建
-            if (document.getElementById('retryButton')) return;
-
-            // 创建按钮
-            const retryButton = document.createElement('button');
-            retryButton.id = 'retryButton';
-            retryButton.textContent = '再试一次';
-
-            // 设置按钮样式
-            retryButton.style.position = 'absolute';
-            retryButton.style.bottom = '20px';
-            retryButton.style.left = '50%';
-            retryButton.style.transform = 'translateX(-50%)';
-            retryButton.style.padding = '10px 20px';
-            retryButton.style.fontSize = '16px';
-            retryButton.style.color = '#fff';
-            retryButton.style.backgroundColor = '#007bff';
-            retryButton.style.border = 'none';
-            retryButton.style.borderRadius = '5px';
-            retryButton.style.cursor = 'pointer';
-
-            // 添加悬停效果
-            retryButton.addEventListener('mouseover', () => {
-                retryButton.style.backgroundColor = '#0056b3';
-            });
-            retryButton.addEventListener('mouseout', () => {
-                retryButton.style.backgroundColor = '#007bff';
-            });
-
-            // 绑定点击事件
-            retryButton.addEventListener('click', () => {
-                createTextParticles(); // 调用重新创建粒子的函数
-            });
-
-            // 将按钮添加到页面
-            document.body.appendChild(retryButton);
-        }
+       
 
         function loop() {
             requestAnimationFrame(loop);
@@ -312,22 +320,49 @@
                 fireworkParticles[j].draw();
                 fireworkParticles[j].update(j);
             }
-            // 检测 textParticles 是否为空
-            if (textParticles.length === 0) {
-                /*if (Math.random() < 0.05) {
-                    fireworks.push(new Firework(canvas.width / 2, canvas.height, Math.random() * canvas.width, Math.random() * canvas.height / 2));
-                    createRetryButton(); // 创建按钮
-                }*/
-                createTextParticles(); // 如果为空，重新创建粒子
-            }
-            
+            // 检测 textParticles 是否为空 与积分是否为100
+            if (textParticles.length === 0 && score < 100) {
+                createTextParticles(); // 重新创建粒子
+                //积分大于等于100时,创建烟花
+            }else if(score >= 100){
+                     //以%10的概率创建新的烟花
+                    if(Math.random() < 0.1){
+                        fireworks.push(new Firework(canvas.width / 2, canvas.height, Math.random() * canvas.width, Math.random() * canvas.height / 2));
+                    }
+                }
+        
+
+            // 绘制文字粒子
             textParticles.forEach(particle => {
                 particle.update();
                 particle.draw();
             });
-            /*if (Math.random() < 0.05) {
-                fireworks.push(new Firework(canvas.width / 2, canvas.height, Math.random() * canvas.width, Math.random() * canvas.height / 2));
-            }*/
+            
+        }
+
+        function checkScore() {
+            //判断是否达到100分
+            if (score >= 100) {
+                //删除文字粒子
+                textParticles.length = 0; // 清空文字粒子
+               
+                // 显示恭喜消息
+                const congratsMessage = document.createElement('div');
+                congratsMessage.id = 'congratsMessage';
+                congratsMessage.textContent = '恭喜你达到 100 分！';
+                congratsMessage.style.position = 'absolute';
+                congratsMessage.style.top = '30%';
+                congratsMessage.style.left = '50%';
+                congratsMessage.style.transform = 'translate(-50%, -50%)';
+                congratsMessage.style.fontSize = '36px';
+                congratsMessage.style.color = '#fff';
+                congratsMessage.style.textAlign = 'center';
+                document.body.appendChild(congratsMessage);
+
+                // 创建“再试一次”按钮
+                createRetryButton();
+            }
+ 
         }
 
         function playSound(){
@@ -340,7 +375,67 @@
 
         }
 
+        function createRetryButton() {
+            // 检查是否已经存在按钮，避免重复创建
+            if (document.getElementById('retryButton')) return;
+
+            // 创建按钮
+            const retryButton = document.createElement('button');
+            retryButton.id = 'retryButton';
+            retryButton.textContent = '再试一次';
+
+            // 设置按钮样式
+            retryButton.style.position = 'absolute';// 设置按钮位置
+            //retryButton.style.bottom = '20px';// 设置按钮距离底部的距离
+            retryButton.style.left = '50%';// 设置按钮距离左侧的距离
+            retryButton.style.transform = 'translateX(-50%)';// 使按钮居中
+            retryButton.style.padding = '10px 20px';// 设置按钮的填充和边框
+            retryButton.style.fontSize = '16px';// 设置字体大小
+            retryButton.style.color = '#fff';// 设置字体颜色
+            retryButton.style.backgroundColor = '#007bff';// 设置背景颜色
+            retryButton.style.border = 'none';// 设置边框
+            retryButton.style.borderRadius = '5px';// 设置圆角
+            retryButton.style.cursor = 'pointer';// 设置鼠标悬停时的光标样式
+
+            // 添加悬停效果
+            retryButton.addEventListener('mouseover', () => {
+                retryButton.style.backgroundColor = '#0056b3';
+            });
+            retryButton.addEventListener('mouseout', () => {
+                retryButton.style.backgroundColor = '#007bff';
+            });
+
+            // 绑定点击事件
+            retryButton.addEventListener('click', () => {
+                // 移除恭喜消息和按钮
+                document.getElementById('congratsMessage').remove();
+                retryButton.remove();
+                // 清除烟花数组
+                fireworks.length = 0; // 清空烟花
+        
+                // 重置积分
+                score = 0;
+                scoreDisplay.textContent = `积分: ${score}`; // 更新积分显示
+                createTextParticles();//重新开始游戏
+            });
+            // 将按钮添加到页面
+            document.body.appendChild(retryButton);
+        }
+            
+        // 点击“开始游戏”按钮后运行游戏逻辑
+        document.getElementById('startButton').addEventListener('click', () => {
+            // 隐藏按钮
+            document.getElementById('startButton').style.display = 'none';
+            // 显示画布
+            canvas.style.display = 'block';
+
+            // 添加事件监听器，支持鼠标点击和触摸事件
+            canvas.addEventListener('click', handleInteraction);
+            canvas.addEventListener('touchstart', handleInteraction);
+        });
+        //创建粒子
         createTextParticles();
+        //主函数
         loop();
 
 
@@ -362,9 +457,14 @@
 
             textParticles.forEach((particle, index) => {
                 if (isParticleClicked(particle, mouseX, mouseY)) {
+                    //增加积分
+                    score += 10; // 每点击一个粒子增加10分
+                    scoreDisplay.textContent = `积分: ${score}`; // 更新积分显示`
                     playSound(); // 播放声音
                     createExplosion(particle.x, particle.y, particle.color); // 创建爆炸效果
                     textParticles.splice(index, 1); // 移除被点击的粒子
+                    checkScore(); // 检查积分是否达到100分
+                    
                 }
             });
         }
