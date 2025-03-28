@@ -73,7 +73,7 @@
 
         const message = "金木水火土王乐涵王楚心刘红燕王少康爸爸妈妈姐姐妹妹abcdefg1234567890大小多少你我他吃";
         const textParticles = [];
-        const fixedSpeed = 3; // 固定速度
+        const fixedSpeed = 1; // 固定速度
         let score = 0;//初始化积分
 
         // 显示积分
@@ -325,8 +325,8 @@
                 createTextParticles(); // 重新创建粒子
                 //积分大于等于100时,创建烟花
             }else if(score >= 100){
-                     //以%10的概率创建新的烟花
-                    if(Math.random() < 0.1){
+                     //以%7的概率创建新的烟花
+                    if(Math.random() < 0.07){
                         fireworks.push(new Firework(canvas.width / 2, canvas.height, Math.random() * canvas.width, Math.random() * canvas.height / 2));
                     }
                 }
@@ -458,7 +458,7 @@
             textParticles.forEach((particle, index) => {
                 if (isParticleClicked(particle, mouseX, mouseY)) {
                     //增加积分
-                    score += 10; // 每点击一个粒子增加10分
+                    score += 2; // 每点击一个粒子增加10分
                     scoreDisplay.textContent = `积分: ${score}`; // 更新积分显示`
                     playSound(); // 播放声音
                     createExplosion(particle.x, particle.y, particle.color); // 创建爆炸效果
