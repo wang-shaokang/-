@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第一个web程序</title>
+    <style>
+        body {
+            background-color: rgb(2, 27, 27);
+        }
+        a {
+            position: absolute; /* 设置按钮位置 ,绝对位置*/
+            top: 50%; /* 垂直居中 */
+            left: 50%;/* 水平居中*/
+            transform: translate(-50%, -50%);/*按钮居中 */
+            padding: 20px 40px;
+            font-size: 30px; /* 设置按钮字体大小 */
+            color: #fff; /* 设置按钮字体颜色 */
+            background-color: #007bff; /* 设置按钮背景颜色 */
+            border: none; /* 去掉按钮边框 */
+            border-radius: 10px; /* 设置按钮圆角 */
+            cursor: pointer; /* 鼠标悬停时显示手型光标 */
+            transition: background-color 0.3s; /* 添加过渡效果 */
+            text-decoration: none;/*去除下划线*/
+        }
+        #wenziyouxi{
+            top: 30%;
+        }
+        #shuziyouxi{
+            top: 50%;
+        }
+    </style>
+</head>
+<body>
+    <a id='wenziyouxi' href="wenziyouxi.html">认识汉字</a>
+    <a id='shuziyouxi' href="shuziyouxi.html">数字分解</a>
+</body>
+</html>

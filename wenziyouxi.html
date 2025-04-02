@@ -3,15 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>生日快乐</title>
+    <title>字宝宝</title>
     <style>
         body {
             margin: 0;
             padding: 0;
             overflow: hidden;
             background-color:rgb(2, 27, 27);
-            /*background-image: url('./xingkong.jpg');
-            background-size: cover;  使背景图片覆盖整个屏幕 */
             color: #fff;
             display: flex;
             justify-content: center;
@@ -325,7 +323,7 @@
                 createTextParticles(); // 重新创建粒子
                 //积分大于等于100时,创建烟花
             }else if(score >= 100){
-                     //以%7的概率创建新的烟花
+                     //以7%的概率创建新的烟花
                     if(Math.random() < 0.07){
                         fireworks.push(new Firework(canvas.width / 2, canvas.height, Math.random() * canvas.width, Math.random() * canvas.height / 2));
                     }
