@@ -10,7 +10,7 @@ const cuoWu = document.getElementById('cuowu');
 const zhengQue = document.getElementById('zhengque');
 const daCuoLa = document.getElementById('dacuola');
 const niTaiBangLe = document.getElementById('nitaibangle');
-const yanHua = document.getElementById('yanHua')
+const yanHua = document.getElementById('yanHua');
 const scoreDiv = document.getElementById('score');
 
 var score = 0; //初始化得分

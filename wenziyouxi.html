@@ -61,6 +61,33 @@
 </head>
 <body>
     <audio id="poLieYinXiao" src="poLieYinXiao.wav" preload="auto"></audio>
+    <audio id='jin' src="zibaobaoaudio/jin.wav" preload='auto'></audio>
+    <audio id='mu' src="zibaobaoaudio/mu.wav" preload='auto'></audio>
+    <audio id='shui' src="zibaobaoaudio/shui.wav" preload='auto'></audio>
+    <audio id='huo' src="zibaobaoaudio/huo.wav" preload='auto'></audio>
+    <audio id='tu' src="zibaobaoaudio/tu.wav" preload='auto'></audio>
+    <audio id='mi' src="zibaobaoaudio/mi.wav" preload='auto'></audio>
+    <audio id='fei' src="zibaobaoaudio/fei.wav" preload='auto'></audio>
+    <audio id='zhi' src="zibaobaoaudio/zhi.wav" preload='auto'></audio>
+    <audio id='ge' src="zibaobaoaudio/ge.wav" preload='auto'></audio>
+    <audio id='ren' src="zibaobaoaudio/ren.wav" preload='auto'></audio>
+    <audio id='chu' src="zibaobaoaudio/chu.wav" preload='auto'></audio>
+    <audio id='qian' src="zibaobaoaudio/qian.wav" preload='auto'></audio>
+    <audio id='wan' src="zibaobaoaudio/wan.wav" preload='auto'></audio>
+    <audio id='guang' src="zibaobaoaudio/guang.wav" preload='auto'></audio>
+    <audio id='jiu' src="zibaobaoaudio/jiu.wav" preload='auto'></audio>
+    <audio id='bai' src="zibaobaoaudio/bai.wav" preload='auto'></audio>
+    <audio id='qi' src="zibaobaoaudio/qi.wav" preload='auto'></audio>
+    <audio id='shang' src="zibaobaoaudio/shang.wav" preload='auto'></audio>
+    <audio id='xia' src="zibaobaoaudio/xia.wav" preload='auto'></audio>
+    <audio id='men' src="zibaobaoaudio/men.wav" preload='auto'></audio>
+    <audio id='shan' src="zibaobaoaudio/shan.wav" preload='auto'></audio>
+    <audio id='yang' src="zibaobaoaudio/yang.wav" preload='auto'></audio>
+    <audio id='shou' src="zibaobaoaudio/shou.wav" preload='auto'></audio>
+    <audio id='dong' src="zibaobaoaudio/dong.wav" preload='auto'></audio>
+    <audio id='er' src="zibaobaoaudio/er.wav" preload='auto'></audio>
+    <audio id="cuowu" src="10421.wav" preload="auto"></audio>
+    <audio id="yanHua" src="36261.mp3" preload="auto"></audio>
     <canvas id="fireworksCanvas"></canvas>
     <button id="startButton">开始游戏</button>
     <script>
@@ -69,10 +96,45 @@
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
-        const message = "金木水火土米飞只个人出千万广九七百上下门山羊手东耳";
+        // const message = "金木水火土米飞只个人出千万广九七百上下门山羊手东耳";
+        const message ={
+            '金': 'jin',
+            '木': 'mu',
+            '水': 'shui',
+            '火': 'huo',
+            '土': 'tu',
+            '米': 'mi',
+            '飞': 'fei',
+            '只': 'zhi',
+            '个': 'ge',
+            '人': 'ren',
+            '出': 'chu',
+            '千': 'qian',
+            '万': 'wan',
+            '广': 'guang',
+            '九': 'jiu',
+            '七': 'qi',
+            '百': 'bai',
+            '上': 'shang',
+            '下': 'xia',
+            '门': 'men',
+            '山': 'shan',
+            '羊': 'yang',
+            '手': 'shou',
+            '东': 'dong',
+            '耳': 'er',
+        }
         const textParticles = [];
         const fixedSpeed = 1; // 固定速度
         let score = 0;//初始化积分
+        let randomMessage = [];//随机选取的文字数组
+        let soundPlayed = false; //声音播放标志
+        let soundTimeout; //定时器id
+        let yanHua = document.getElementById('yanHua');
+
+        //设置错误音效的音量
+        document.getElementById('cuowu').volume = 0.1;
+        
 
         // 显示积分
         const scoreDisplay = document.createElement('div');
@@ -166,9 +228,21 @@
         }
 
         function createTextParticles() {
+            //创建粒子
             textParticles.length = 0; // 清空现有粒子
-            const randomMessage = message[Math.floor(Math.random() * message.length)] + 
-                          message[Math.floor(Math.random() * message.length)]; // 随机生成两个字符
+            randomMessage.length = 0; // 清空已选字符
+            const keys = Object.keys(message); //获取所有键 返回数组
+            while(true){
+                //随机获取一个字符，添加到数组中并去重
+                const randomText = keys[Math.floor(Math.random() * keys.length)]
+                if(randomMessage.length >= 2){
+                    break;
+                }else if (randomMessage.includes(randomText)){
+                    continue;
+                }else{
+                    randomMessage.push(randomText)
+                }
+            }
             const startX = canvas.width / 2 - (randomMessage.length / 2) * 50;
             const startY = canvas.height / 2;
             for (let i = 0; i < randomMessage.length; i++) {
@@ -192,8 +266,11 @@
                     }
                 } while (overlapping);
                 textParticles.push(new TextParticle(x, y, randomMessage[i]));
+            
             }
         }
+
+
 
         class Firework {
             // 烟花信号弹
@@ -334,9 +411,20 @@
             textParticles.forEach(particle => {
                 particle.update();
                 particle.draw();
-            });
-            
+            });  
+            if (!soundPlayed && textParticles.length > 1){
+                 //播放字符声音
+                playSound(message[randomMessage['1']]);
+                soundPlayed = true;
+                
+                //设置新的定时器 重置标志变量 延时隔两秒
+                soundTimeout = setTimeout(() => {
+                    soundPlayed = false;
+                },2000);
+            }
         }
+
+    
 
         function checkScore() {
             //判断是否达到100分
@@ -359,13 +447,15 @@
 
                 // 创建“再试一次”按钮
                 createRetryButton();
+                yanHua.loop = true;
+                yanHua.play();
             }
  
         }
 
-        function playSound(){
+        function playSound(audioId){
             //播放声音
-            const audio = document.getElementById('poLieYinXiao');
+            const audio = document.getElementById(audioId);
             audio.currentTime = 0; //重置播放进度(允许重复触发)
             audio.play().catch(error =>{
                 console.log('播放声音失败;', error);
@@ -410,6 +500,8 @@
                 retryButton.remove();
                 // 清除烟花数组
                 fireworks.length = 0; // 清空烟花
+                yanHua.pause();
+                yanHua.currentTime = 0;
         
                 // 重置积分
                 score = 0;
@@ -426,7 +518,7 @@
             document.getElementById('startButton').style.display = 'none';
             // 显示画布
             canvas.style.display = 'block';
-
+            playSound('poLieYinXiao')
             // 添加事件监听器，支持鼠标点击和触摸事件
             canvas.addEventListener('click', handleInteraction);
             canvas.addEventListener('touchstart', handleInteraction);
@@ -435,6 +527,7 @@
         createTextParticles();
         //主函数
         loop();
+       
 
 
         // 添加事件监听器，支持鼠标点击和触摸事件
@@ -455,13 +548,25 @@
 
             textParticles.forEach((particle, index) => {
                 if (isParticleClicked(particle, mouseX, mouseY)) {
-                    //增加积分
-                    score += 2; // 每点击一个粒子增加10分
-                    scoreDisplay.textContent = `积分: ${score}`; // 更新积分显示`
-                    playSound(); // 播放声音
-                    createExplosion(particle.x, particle.y, particle.color); // 创建爆炸效果
-                    textParticles.splice(index, 1); // 移除被点击的粒子
-                    checkScore(); // 检查积分是否达到100分
+                    if(randomMessage['1'] == particle.text){
+                          //清除之前的定时器
+                        if (soundTimeout){
+                            clearTimeout(soundTimeout);
+                            soundPlayed = false;
+                        }
+                        //增加积分
+                        score += 5; // 每点击一个粒子增加5分
+                        scoreDisplay.textContent = `积分: ${score}`; // 更新积分显示`
+                        playSound('poLieYinXiao'); // 播放声音
+                        createExplosion(particle.x, particle.y, particle.color); // 创建爆炸效果
+                        textParticles.splice(index, 1); // 移除被点击的粒子
+                        checkScore(); // 检查积分是否达到100分
+                        setTimeout(() =>{
+                            textParticles.length = 0; //清空粒子
+                        },500);
+                    }else{
+                        playSound('cuowu')
+                    }
                     
                 }
             });
