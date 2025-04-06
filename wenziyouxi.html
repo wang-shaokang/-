@@ -87,6 +87,7 @@
     <audio id='er' src="zibaobaoaudio/er.WAV" preload='auto'></audio>
     <audio id="cuowu" src="10421.wav" preload="auto"></audio>
     <audio id="yanHua" src="36261.mp3" preload="auto"></audio>
+    <audio id="yiBaiFen" src="100fen.WAV" preload="auto"></audio>
     <canvas id="fireworksCanvas"></canvas>
     <button id="startButton">开始游戏</button>
     <script>
@@ -130,6 +131,7 @@
         let soundPlayed = false; //声音播放标志
         let soundTimeout; //定时器id
         let yanHua = document.getElementById('yanHua');
+        let yiBaiFen = document.getElementById('yiBaiFen')
 
         //设置错误音效的音量
         document.getElementById('cuowu').volume = 0.1;
@@ -448,6 +450,7 @@
                 createRetryButton();
                 yanHua.loop = true;
                 yanHua.play();
+                yiBaiFen.play();
             }
  
         }
