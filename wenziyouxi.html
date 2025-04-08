@@ -39,6 +39,9 @@
         button:hover {
         background-color: #0056b3; /* 鼠标悬停时的背景颜色 */
         }
+        #startButton{
+            display: none;/* 隐藏开始按钮 */
+        }
 
         /* 手机端适配 */
         @media (max-width: 768px) {
@@ -56,7 +59,6 @@
         }
       
     </style>
-    <!-- <link rel="preload" href="poLieYinXiao.wav"> -->
 </head>
 <body>
     <audio id="poLieYinXiao" src="poLieYinXiao.wav" preload="auto"></audio>
@@ -96,7 +98,6 @@
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
-        // const message = "金木水火土米飞只个人出千万广九七百上下门山羊手东耳";
         const message ={
             '金': 'jin',
             '木': 'mu',
@@ -132,6 +133,7 @@
         let soundTimeout; //定时器id
         let yanHua = document.getElementById('yanHua');
         let yiBaiFen = document.getElementById('yiBaiFen')
+
 
         //设置错误音效的音量
         document.getElementById('cuowu').volume = 0.1;
@@ -434,7 +436,7 @@
                 textParticles.length = 0; // 清空文字粒子
                
                 // 显示恭喜消息
-                const congratsMessage = document.createElement('div');
+                const congratsMessage = document.createElement('div');//创建一个div元素，显示恭喜信息
                 congratsMessage.id = 'congratsMessage';
                 congratsMessage.textContent = '恭喜你达到 100 分！';
                 congratsMessage.style.position = 'absolute';
@@ -463,6 +465,41 @@
                 console.log('播放声音失败;', error);
             });
 
+        }
+
+        function checkAllAudioLoaded(){
+            //检查所有音频是否加载完毕
+
+            // 显示正在加载....
+            const congratsMessage1 = document.createElement('div');//创建一个div元素，显示恭喜信息
+            congratsMessage1.id = 'congratsMessage1';
+            congratsMessage1.textContent = '正在加载.....';
+            congratsMessage1.style.position = 'absolute';
+            congratsMessage1.style.top = '50%';
+            congratsMessage1.style.left = '50%';
+            congratsMessage1.style.transform = 'translate(-50%, -50%)';
+            congratsMessage1.style.fontSize = '36px';
+            congratsMessage1.style.color = '#fff';
+            congratsMessage1.style.textAlign = 'center';
+            document.body.appendChild(congratsMessage1);
+
+
+            //获取所有音频元素
+            const audioElements = document.querySelectorAll('audio');
+            //设置标记
+            let loadedAudioCount = 0;
+            const totalAudioCount = audioElements.length;
+
+            //为每个元素添加 canplaythrough事件监听器
+            audioElements.forEach(audio => {
+                audio.addEventListener('canplaythrough', () => {
+                    loadedAudioCount++;
+                    if(loadedAudioCount === totalAudioCount){
+                        document.getElementById('congratsMessage1').remove();//移除正在加载信息
+                        document.getElementById('startButton').style.display = 'block'; //显示开始按钮
+                    }
+                })
+            })
         }
 
         function createRetryButton() {
@@ -514,19 +551,7 @@
             document.body.appendChild(retryButton);
         }
             
-        // 点击“开始游戏”按钮后运行游戏逻辑
-        document.getElementById('startButton').addEventListener('click', () => {
-            // 隐藏按钮
-            document.getElementById('startButton').style.display = 'none';
-            playSound('poLieYinXiao')
-             //创建粒子
-            createTextParticles();
-            //主函数
-            loop();
-            // 添加事件监听器，支持鼠标点击和触摸事件
-            canvas.addEventListener('click', handleInteraction);
-            canvas.addEventListener('touchstart', handleInteraction);
-        });
+
 
 
         // 处理交互事件
@@ -583,6 +608,22 @@
                 fireworkParticles.push(new FireworkParticle(x, y, color));
             }
         }
+
+
+        checkAllAudioLoaded(); //检测音频是否加载完毕
+        // 点击“开始游戏”按钮后运行游戏逻辑
+        document.getElementById('startButton').addEventListener('click', () => {
+            // 隐藏按钮
+            document.getElementById('startButton').style.display = 'none';
+            playSound('poLieYinXiao')
+             //创建粒子
+            createTextParticles();
+            //主函数
+            loop();
+            // 添加事件监听器，支持鼠标点击和触摸事件
+            canvas.addEventListener('click', handleInteraction);
+            canvas.addEventListener('touchstart', handleInteraction);
+        });
     </script>
 </body>
 </html>
